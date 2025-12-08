@@ -1,0 +1,3 @@
+Part 1 - we have to pick two digits to make the largest possible integer. Iterate through the digits stopping before the last one to find the index of the largest, then search from the one after that through the end to find the next largest, and join them together.
+
+Part 2 - ok, selecting twelve is a lot more than two. Refactor the algorithm to be able to select an arbitrary number of digits, fairly efficient and scalable with a loop for up to the arbitrary max digits to select, and an inner loop to search a subset of the row of digits for the largest one, and just keep track of the index of the last digit we selected for use in the next iteration.

@@ -28,49 +28,48 @@ for (let p1 = 0; p1 < points.length; p1++) {
 let sortedEntries = Object.entries(distances).sort((a, b) => a[1] - b[1]);
 
 let MAX = 1000;
+let top3 = [];
 let circuits = [];
-for (let i = 0; i < MAX; i++) {
+let finalEntries = [];
+for (let i = 0; i < sortedEntries.length; i++) {
     let [p1, p2] = sortedEntries[i][0].split(',');
     dl(`Closest: ${p1}:${points[p1]}; ${p2}:${points[p2]}; distance: ${sortedEntries[i][1]}`);
-    let found = false;
-    for (const c of circuits) {
-        if (c.includes(p1) && c.includes(p2)) {
-            found = true;
-        } else if (c.includes(p1)) {
-            c.push(p2);
-            found = true;
-        } else if (c.includes(p2)) {
-            c.push(p1);
-            found = true;
+    let foundat = [];
+    for (let c = 0; c < circuits.length; c++) {
+        if (circuits[c].includes(p1) && circuits[c].includes(p2)) {
+            foundat.push(c);
+        } else if (circuits[c].includes(p1)) {
+            circuits[c].push(p2);
+            foundat.push(c);
+        } else if (circuits[c].includes(p2)) {
+            circuits[c].push(p1);
+            foundat.push(c);
         }
     }
-    if (!found) circuits.push([p1, p2]);
+    if (foundat.length > 0) {
+        let basecircuit = circuits[foundat[0]];
+        for (let c = 1; c < foundat.length; c++) {
+            basecircuit.push(...circuits[foundat[c]]);
+            circuits[foundat[c]] = [];
+        }
+        circuits[foundat[0]] = [...new Set(basecircuit)];
+        if (circuits[foundat[0]].length == points.length) {
+            finalEntries = [p1, p2];
+            break;
+        }
+    } else {
+        circuits.push([p1, p2]);
+    }
     dl(circuits.map(c => c.length).sort());
-}
-
-// merge circuits
-let hasupdated = true;
-while (hasupdated) {
-    hasupdated = false;
-    for (let c1 = 0; c1 < circuits.length; c1++) {
-        for (let c2 = c1 + 1; c2 < circuits.length; c2++) {
-            if (circuits[c1].some(v => circuits[c2].includes(v))) {
-                circuits[c1].push(...circuits[c2]);
-                circuits[c1] = [...new Set(circuits[c1])];
-                circuits[c2] = [];
-                hasupdated = true;
-            }
-        }
+    if (i == MAX - 1) {
+        top3 = circuits.map(c => c.length).sort((a, b) => b - a).slice(0, 3);
     }
 }
+
 // 
+console.log(`Part 1: ${top3.reduce((ac, cv) => ac * cv, 1)}`);
 
-console.log(`Part 1: ${circuits.map(c => c.length).sort((a, b) => b - a)}`);
-//console.log(JSON.stringify(circuits));
-let sl = circuits.map(c => c.length).sort((a, b) => b - a);
-console.log(`Part 1: ${sl[0] * sl[1] * sl[2]}`);
-
-// 48672 too low
+console.log(`Part 2: ${finalEntries}: ${points[finalEntries[0]][0] * points[finalEntries[1]][0]}`);
 
 const t1 = performance.now();
 console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);

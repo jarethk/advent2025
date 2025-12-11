@@ -1,0 +1,3 @@
+Part 1 - simple math, for every pair of points multiply the difference in x by difference in y. Use Math.abs() so we don't care about going negative, and don't forget the +1.
+
+Part 2 - This took me several passes and a number of different theories. I tried seeing if the edges of any rectangle collided with an edge, but that doesn't work in cases where the rectangle is along an outer corner. I theorized the inner rectangle would originate from a series of 3 consecutive points, but that excludes all fully internal rectangles. Eventually I landed on coordinate compression, so I can generate a 2d grid, draw the polygon, fill the space, and check all of the edge points of the rectangle.
